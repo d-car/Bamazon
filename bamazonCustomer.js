@@ -54,12 +54,25 @@ function run() {
                     }
                 }
             }
-        //pass the answers from inquirer through this function which checks stock to see if it is available
-        ]).then(function(ans) {
-            var userChoice = (ans.id)-1;
-            var userQty = (ans.userVal);
-
-        })
+        //pass the answers from inquirer through this promise function which checks stock to see if it is available
+            ]).then(function(ans) {
+                var userChoice = (ans.item_id)-1;
+                var userQty = (ans.quantity);
+                var total = parseFloat(((res[userChoice].price) * userQty))
+            //update db accordingly
+                if (userQty <= res[userChoice].stock_quantity) {
+                    connection.query("UPDATE items SET ? WHERE ?", [
+                {stock_quantity: (res[userChoice].stock_quantity - userQty)},
+                {item_id: ans.item_id}
+                ], function (err, res2) {
+                    if(err) {
+                        throw err
+                    } else {
+                    console.log("Good choice, your total is $" + total.toFixed(2));
+                    }
+                })
+                }
+            })
     })
 };
 
