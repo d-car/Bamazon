@@ -18,12 +18,15 @@ function run() {
         } else {
             console.log("-----------------------------------------------------------------------\n")
             console.log("                        Welcome to Bamazon!\n")
+            console.log("                       ----------------------\n")
+            console.log("                         Browse items below\n")
             console.log("-----------------------------------------------------------------------\n")
-            console.log("                        Browse items below\n")
-            console.log("                --------------------------------------\n")
+            console.log("     || ID || Item Name || Department || Price || Quantity ||\n");
+            console.log("-----------------------------------------------------------------------\n")
+
 
             for (var i = 0; i < res.length; i++) {
-                console.log("ID: " + res[i].item_id + " || " + res[i].product_name + " || " + res[i].department_name + " || " + "$"+  res[i].price + " || " + res[i].stock_quantity + "\n");
+                console.log("|| " + res[i].item_id + " || " + res[i].product_name + " || " + res[i].department_name + " || " + "$"+  res[i].price + " || " + res[i].stock_quantity + " ||\n");
             }
 
         }
@@ -60,7 +63,7 @@ function run() {
                 var userQty = (ans.quantity);
                 var total = parseFloat(((res[userChoice].price) * userQty))
             //update db accordingly
-                if (userQty <= res[userChoice].stock_quantity) {
+                if (userQty <= res[userChoice].stock_quantity && userQty >= 0 ) {
                     connection.query("UPDATE items SET ? WHERE ?", [
                 {stock_quantity: (res[userChoice].stock_quantity - userQty)},
                 {item_id: ans.item_id}
@@ -68,14 +71,38 @@ function run() {
                     if(err) {
                         throw err
                     } else {
-                    console.log("Good choice, your total is $" + total.toFixed(2));
+                    console.log("\nGood choice, your total is $" + total.toFixed(2) + "!\n");
+                    console.log("Your items will be arriving by carrier pigeon on 3-5 weeks.");
+                    anotherOne();
                     }
                 })
+                } else {
+                    console.log("Insufficient Stock.  Please select a valid quantity.");
+                    anotherOne();
                 }
             })
     })
 };
 
+//This runs after a completed purchase or after gets insufficient stock warning on an item
+function anotherOne() {
+    inquirer.prompt([
+        {
+            type: "confirm",
+            name: "reply",
+            message: "Continue shopping?\n",            
+        },   
+    ]).then(function(ans){
+        if(ans.reply){
+            run();
+        } else {
+            console.log("\nThanks for stopping by! Come again soon!");
+            connection.end(function(err) {
+                // The connection is terminated now
+              });
+        }
+    })
+}
 run();
 
 
