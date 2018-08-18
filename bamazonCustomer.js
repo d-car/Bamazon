@@ -20,22 +20,49 @@ function run() {
             console.log("                        Welcome to Bamazon!\n")
             console.log("-----------------------------------------------------------------------\n")
             console.log("                        Browse items below\n")
-            console.log("                --------------------------------------")
+            console.log("                --------------------------------------\n")
 
             for (var i = 0; i < res.length; i++) {
-                console.log("ID: " + res[i].item_id + " | " + res[i].product_name + " | " + res[i].department_name + " | " + "$"+  res[i].price + " | " + res[i].stock_quantity + "\n");
+                console.log("ID: " + res[i].item_id + " || " + res[i].product_name + " || " + res[i].department_name + " || " + "$"+  res[i].price + " || " + res[i].stock_quantity + "\n");
             }
 
         }
+        //run inquirer to gather user input
+        inquirer.prompt([
+            {
+                type: "input",
+                name: "item_id",
+                message: "Choose the ID of the item you'd like to purchase:\n",
+                //validation function baked into inquirer. checks to see if user input item id is a number within the range
+                validate: function(userVal) {
+                    if(isNaN(userVal) == false && userVal >= 0 && userVal <= res.length) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            },
+            {
+                type: "input",
+                name: "quantity",
+                message: "Enter desired quantity:",
+                validate: function(userVal) {
+                    if(isNaN(userVal)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        //pass the answers from inquirer through this function which checks stock to see if it is available
+        ]).then(function(ans) {
+            var userChoice = (ans.id)-1;
+            var userQty = (ans.userVal);
 
-        // inquirer.prompt([
-        //     {
-        //         type: "input",
-        //         name: "item_id",
-        //         message: ""
-        //     }
-        // ])
+        })
     })
 };
+
+run();
 
 
